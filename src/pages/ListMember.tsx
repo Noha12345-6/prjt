@@ -198,126 +198,163 @@ export default function MembersList() {
   const currentRoleFilter = (columnFilters.find((f) => f.id === "role")?.value as string) || "all";
   const currentStatusFilter = (columnFilters.find((f) => f.id === "status")?.value as string) || "all";
 
-  return (
-    <div className="p-6 space-y-6 bg-white rounded-lg shadow-sm">
-      <header className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-gray-900">Team Members</h1>
-          <Button onClick={() => navigate("/members/add")} className="bg-blue-600 hover:bg-blue-700">
-            Add Member
-          </Button>
-        </div>
-
-        <div className="w-full max-w-sm">
-          <Label htmlFor="searchInput" className="sr-only">Search members</Label>
-          <Input
-            id="searchInput"
-            type="search"
-            placeholder="Search members..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="w-full"
-          />
-        </div>
-      </header>
-
-      {/* Filters */}
-      <section className="flex flex-wrap items-center gap-6 bg-gray-50 p-4 rounded-md">
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="roleFilter" className="font-medium text-gray-700">Role:</Label>
-          <Select value={currentRoleFilter} onValueChange={handleRoleFilterChange}>
-            <SelectTrigger id="roleFilter" className="w-[180px]">
-              <SelectValue placeholder="All roles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All roles</SelectItem>
-              {uniqueRoles.map((role) => (
-                <SelectItem key={role} value={role}>
-                  {role}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="statusFilter" className="font-medium text-gray-700">Status:</Label>
-          <Select value={currentStatusFilter} onValueChange={handleStatusFilterChange}>
-            <SelectTrigger id="statusFilter" className="w-[140px]">
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </section>
-
-      {/* Table */}
-      <div className="overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-100">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="p-4 text-left text-sm font-semibold text-gray-700">
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody className="divide-y divide-gray-200">
-            {table.getRowModel().rows.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="p-6 text-center text-gray-500">
-                  No members found.
-                </td>
-              </tr>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50">
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="p-4 text-sm text-gray-700">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      {table.getPageCount() > 1 && (
-        <footer className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
-          <p className="text-sm text-gray-600">
-            Showing {table.getRowModel().rows.length} of {members.length} members
-          </p>
-          <div className="flex space-x-2">
+  
+  
+    return (
+      <div className="p-6 space-y-6 bg-white rounded-xl shadow-md">
+        {/* Header amélioré */}
+        <header className="flex flex-col sm:flex-row justify-between items-center gap-4 pb-6 border-b border-gray-100">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
+              </svg>
+              Team Members
+            </h1>
             <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => table.previousPage()} 
-              disabled={!table.getCanPreviousPage()}
+              onClick={() => navigate("/members/add")} 
+              className="bg-blue-600 hover:bg-blue-700 shadow-sm transition-all"
             >
-              Previous
-            </Button>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => table.nextPage()} 
-              disabled={!table.getCanNextPage()}
-            >
-              Next
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Add Member
             </Button>
           </div>
-        </footer>
-      )}
-    </div>
-  );
-}
+  
+          <div className="w-full max-w-sm relative">
+            <Label htmlFor="searchInput" className="sr-only">Search members</Label>
+            <div className="relative">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+              </svg>
+              <Input
+                id="searchInput"
+                type="search"
+                placeholder="Search members..."
+                value={globalFilter}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+        </header>
+  
+        {/* Filters améliorés */}
+        <section className="flex flex-wrap items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="roleFilter" className="font-medium text-gray-700 text-sm">Filter by Role:</Label>
+            <Select value={currentRoleFilter} onValueChange={handleRoleFilterChange}>
+              <SelectTrigger id="roleFilter" className="w-[180px] bg-white">
+                <SelectValue placeholder="All roles" />
+              </SelectTrigger>
+              <SelectContent className="bg-white rounded-md shadow-lg">
+                <SelectItem value="all" className="hover:bg-gray-50">All roles</SelectItem>
+                {uniqueRoles.map((role) => (
+                  <SelectItem key={role} value={role} className="hover:bg-gray-50">
+                    {role}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+  
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="statusFilter" className="font-medium text-gray-700 text-sm">Filter by Status:</Label>
+            <Select value={currentStatusFilter} onValueChange={handleStatusFilterChange}>
+              <SelectTrigger id="statusFilter" className="w-[140px] bg-white">
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+              <SelectContent className="bg-white rounded-md shadow-lg">
+                <SelectItem value="all" className="hover:bg-gray-50">All statuses</SelectItem>
+                <SelectItem value="active" className="hover:bg-gray-50">Active</SelectItem>
+                <SelectItem value="inactive" className="hover:bg-gray-50">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </section>
+  
+        {/* Table améliorée */}
+        <div className="overflow-x-auto border border-gray-200 rounded-xl shadow-sm">
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-50">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="border-b border-gray-200">
+                  {headerGroup.headers.map((header) => (
+                    <th 
+                      key={header.id} 
+                      className="p-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+  
+            <tbody className="divide-y divide-gray-200">
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="p-8 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-gray-500 font-medium">No members found</p>
+                      <p className="text-gray-400 text-sm">Try adjusting your search or filter</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr 
+                    key={row.id} 
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td 
+                        key={cell.id} 
+                        className="p-4 text-sm text-gray-700"
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+  
+        {/* Pagination améliorée */}
+        {table.getPageCount() > 1 && (
+          <footer className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 pt-4">
+            <p className="text-sm text-gray-500">
+              Showing <span className="font-medium">{table.getRowModel().rows.length}</span> of{' '}
+              <span className="font-medium">{members.length}</span> members
+            </p>
+            <div className="flex space-x-2">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => table.previousPage()} 
+                disabled={!table.getCanPreviousPage()}
+                className="border-gray-300 hover:bg-gray-50"
+              >
+                Previous
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => table.nextPage()} 
+                disabled={!table.getCanNextPage()}
+                className="border-gray-300 hover:bg-gray-50"
+              >
+                Next
+              </Button>
+            </div>
+          </footer>
+        )}
+      </div>
+    );
+  }
