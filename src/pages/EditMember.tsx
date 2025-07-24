@@ -1,11 +1,10 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type TaskFormData, taskFormSchema } from "@/validation/schemasTask";
-import { type MemberFormData } from "@/validation/schema";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { Calendar, User, ChevronDown, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { memberFormSchema, MemberRoles, MemberStatuses } from "../validation/schema";
+
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -15,231 +14,146 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
-interface TaskEditProps {
-  tasks: TaskFormData[];
-  members: MemberFormData[];
-  onSave: (task: TaskFormData) => void;
-  isLoading?: boolean;
-}
+type MemberFormData = z.infer<typeof memberFormSchema>;
 
-export function TaskEdit({ tasks, members, onSave, isLoading }: TaskEditProps) {
+export default function MemberEdit() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  const task = tasks.find(t => t.id === Number(id));
+  const [isLoading, setIsLoading] = useState(false);
+  const [member, setMember] = useState<MemberFormData | null>(null);
 
-  const form = useForm<TaskFormData>({
-    resolver: zodResolver(taskFormSchema),
+  const form = useForm<MemberFormData>({
+    resolver: zodResolver(memberFormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      dueDate: new Date().toISOString(),
-      status: "todo",
-      priority: "medium",
-      memberId: 0,
+      name: "",
+      email: "",
+      role: "Developer",
+      joinDate: new Date().toISOString().split("T")[0],
+      status: "active",
     },
   });
 
   useEffect(() => {
-    if (task) {
-      form.reset({
-        ...task,
-        dueDate: task.dueDate, // La date est déjà au bon format ISO string
-      });
-    }
-  }, [task, form]);
-
-  const onSubmit = (data: TaskFormData) => {
-    const taskToSave = {
-      ...data,
-      id: task?.id, // Conserve l'ID original si existant
+    const fetchMember = () => {
+      setIsLoading(true);
+      try {
+        const savedMembers = localStorage.getItem("members");
+        if (savedMembers) {
+          const members = JSON.parse(savedMembers);
+          const memberToEdit = members.find((m: any) => m.id === Number(id));
+          if (memberToEdit) {
+            setMember(memberToEdit);
+            form.reset(memberToEdit);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load member", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    onSave(taskToSave);
+
+    fetchMember();
+  }, [id, form]);
+
+  const onSubmit = (data: MemberFormData) => {
+    setIsLoading(true);
+    try {
+      const savedMembers = localStorage.getItem("members");
+      if (savedMembers) {
+        const members = JSON.parse(savedMembers);
+        const updatedMembers = members.map((m: any) =>
+          m.id === Number(id) ? { ...data, id: Number(id) } : m
+        );
+        localStorage.setItem("members", JSON.stringify(updatedMembers));
+      }
+      navigate("/members", { replace: true });
+    } catch (error) {
+      console.error("Failed to update member", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCancel = () => {
-    navigate(-1); // Retour à la page précédente
-  };
-
-  if (!task) {
+  if (isLoading && !member) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">Tâche non trouvée</p>
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!member) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-foreground">Member not found</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Modifier la tâche</h1>
-      
+    <div className="p-6 max-w-3xl mx-auto bg-card rounded-lg shadow-sm">
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold text-foreground">Edit Member</h1>
+        <p className="text-muted-foreground">Update the member details below</p>
+      </header>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Titre */}
           <FormField
             control={form.control}
-            name="title"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Titre</FormLabel>
+                <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Titre de la tâche" {...field} />
+                  <Input placeholder="John Doe" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {/* Description */}
+
           <FormField
             control={form.control}
-            name="description"
+            name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description (optionnelle)</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Décrivez la tâche en détail..."
-                    className="resize-none"
-                    {...field}
-                  />
+                  <Input placeholder="john@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
-          {/* Date d'échéance */}
+
           <FormField
             control={form.control}
-            name="dueDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Date d'échéance</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP", { locale: fr })
-                        ) : (
-                          <span>Choisir une date</span>
-                        )}
-                        <Calendar className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={new Date(field.value)}
-                      onSelect={(date) => {
-                        if (date) {
-                          field.onChange(date.toISOString());
-                        }
-                      }}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                      locale={fr}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Statut */}
-          <FormField
-            control={form.control}
-            name="status"
+            name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Statut</FormLabel>
+                <FormLabel>Role</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un statut" />
+                      <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="todo">À faire</SelectItem>
-                    <SelectItem value="in_progress">En cours</SelectItem>
-                    <SelectItem value="done">Terminé</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Priorité */}
-          <FormField
-            control={form.control}
-            name="priority"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Priorité</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner une priorité" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="low">Basse</SelectItem>
-                    <SelectItem value="medium">Moyenne</SelectItem>
-                    <SelectItem value="high">Haute</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Assignation */}
-          <FormField
-            control={form.control}
-            name="memberId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Assigné à</FormLabel>
-                <Select
-                  onValueChange={(value) => field.onChange(Number(value))}
-                  value={field.value?.toString()}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <div className="flex items-center">
-                        <User className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Sélectionner un membre" />
-                      </div>
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {members.map((member) => (
-                      <SelectItem key={member.id} value={member.id.toString()}>
-                        {member.name} ({member.role})
+                    {MemberRoles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -248,25 +162,63 @@ export function TaskEdit({ tasks, members, onSave, isLoading }: TaskEditProps) {
               </FormItem>
             )}
           />
-          
-          {/* Boutons d'action */}
+
+          <FormField
+            control={form.control}
+            name="joinDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Join Date</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {MemberStatuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="flex justify-end gap-4 pt-4">
             <Button
               type="button"
               variant="outline"
-              onClick={handleCancel}
+              onClick={() => navigate("/members")}
               disabled={isLoading}
             >
-              Annuler
+              Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Enregistrement...
+                  Saving...
                 </>
               ) : (
-                "Enregistrer les modifications"
+                "Save Changes"
               )}
             </Button>
           </div>

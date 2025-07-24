@@ -1,223 +1,326 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  Home, 
-  Users, 
-  BarChart3, 
-  Settings, 
-  Bell, 
-  Calendar,
-  TrendingUp,
-  UserCheck,
-  Clock,
-  Target,
-  Award,
-  Activity
+  UserCheck, Clock, Target, Award, BarChart3, Users, ArrowUp, ArrowDown,
+  TrendingUp, Activity, Zap, Star, Plus, Filter, RefreshCw
 } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
 
-export default function Dashboard() {
-  const navigate = useNavigate();
+const Dashboard = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState('7');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // Animation des compteurs
+  const [animatedValues, setAnimatedValues] = useState({
+    members: 0,
+    projects: 0,
+    time: 0,
+    score: 0
+  });
 
-  const sidebarItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
-    { id: '2', label: 'Gestion de Membres', icon: Users },
-    { id: '3', label: 'Gestion des taches', icon: BarChart3 },
-    
-  ];
+  useEffect(() => {
+    const targets = { members: 42, projects: 18, time: 2.4, score: 94 };
+    const duration = 2000;
+    const steps = 60;
+    const stepDuration = duration / steps;
 
-  const statsCards: StatCardProps[] = [
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      currentStep++;
+      const progress = currentStep / steps;
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+
+      setAnimatedValues({
+        members: Math.floor(targets.members * easeOut),
+        projects: Math.floor(targets.projects * easeOut),
+        time: (targets.time * easeOut).toFixed(1),
+        score: Math.floor(targets.score * easeOut)
+      });
+
+      if (currentStep >= steps) {
+        clearInterval(interval);
+      }
+    }, stepDuration);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Données pour les cartes de statistiques avec animations
+  const statsCards = [
     {
       title: 'Membres Actifs',
-      value: '42',
-      change: '+12%',
+      value: animatedValues.members,
+      change: '12%',
       trend: 'up' as const,
       icon: UserCheck,
-      color: 'bg-blue-500'
+      gradient: 'from-blue-500 to-blue-600',
+      bgPattern: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900'
     },
     {
       title: 'Projets Complétés',
-      value: '18',
-      change: '+8%',
+      value: animatedValues.projects,
+      change: '8%',
       trend: 'up' as const,
       icon: Target,
-      color: 'bg-green-500'
+      gradient: 'from-emerald-500 to-emerald-600',
+      bgPattern: 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900'
     },
     {
       title: 'Temps Moyen',
-      value: '2.4h',
-      change: '-15%',
+      value: `${animatedValues.time}h`,
+      change: '15%',
       trend: 'down' as const,
       icon: Clock,
-      color: 'bg-orange-500'
+      gradient: 'from-amber-500 to-amber-600',
+      bgPattern: 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900'
     },
     {
       title: 'Score Performance',
-      value: '94%',
-      change: '+5%',
+      value: `${animatedValues.score}%`,
+      change: '5%',
       trend: 'up' as const,
       icon: Award,
-      color: 'bg-purple-500'
+      gradient: 'from-purple-500 to-purple-600',
+      bgPattern: 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900'
     }
   ];
 
+  // Activités récentes avec plus de détails
   const recentActivities = [
-    { user: 'Marie Dupont', action: 'a complété le projet Alpha', time: 'il y a 2h' },
-    { user: 'Pierre Martin', action: 'a rejoint l\'équipe Design', time: 'il y a 4h' },
-    { user: 'Sophie Bernard', action: 'a mis à jour le rapport', time: 'il y a 6h' },
-    { user: 'Thomas Dubois', action: 'a créé une nouvelle tâche', time: 'il y a 8h' }
+    { 
+      id: '1', 
+      user: 'Marie Dupont', 
+      action: 'a complété le projet Alpha', 
+      time: 'il y a 2h',
+      type: 'success',
+      avatar: 'MD'
+    },
+    { 
+      id: '2', 
+      user: 'Pierre Martin', 
+      action: "a rejoint l'équipe Design", 
+      time: 'il y a 4h',
+      type: 'info',
+      avatar: 'PM'
+    },
+    { 
+      id: '3', 
+      user: 'Sophie Bernard', 
+      action: 'a mis à jour le rapport', 
+      time: 'il y a 6h',
+      type: 'warning',
+      avatar: 'SB'
+    },
+    { 
+      id: '4', 
+      user: 'Thomas Dubois', 
+      action: 'a créé une nouvelle tâche', 
+      time: 'il y a 8h',
+      type: 'info',
+      avatar: 'TD'
+    }
   ];
 
-  interface StatCardProps {
-    title: string;
-    value: string;
-    change: string;
-    trend: 'up' | 'down';
-    icon: React.ComponentType<any>;
-    color: string;
-  }
+  const handleRefresh = () => {
+    setIsLoading(true);
+    setTimeout(() => setIsLoading(false), 1000);
+  };
 
-  const StatCard: React.FC<StatCardProps> = ({ title, value, change, trend, icon: Icon, color }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{value}</p>
-        </div>
-        <div className={`${color} p-3 rounded-full`}>
-          <Icon className="w-6 h-6 text-white" />
-        </div>
-      </div>
-      <div className="flex items-center mt-4">
-        <TrendingUp className={`w-4 h-4 ${trend === 'up' ? 'text-green-500' : 'text-red-500'} ${trend === 'down' ? 'rotate-180' : ''}`} />
-        <span className={`text-sm font-medium ml-1 ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-          {change}
-        </span>
-        <span className="text-sm text-gray-500 ml-2">vs mois dernier</span>
-      </div>
-    </div>
-  );
+  const getActivityColor = (type: string) => {
+    switch (type) {
+      case 'success': return 'bg-emerald-500';
+      case 'warning': return 'bg-amber-500';
+      case 'info': return 'bg-blue-500';
+      default: return 'bg-gray-500';
+    }
+  };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
-        <div className="p-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <Activity className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-800">TeamPulse</h2>
-          </div>
-        </div>
-        
-        <nav className="px-4 pb-4">
-        {sidebarItems.map((item) => {
-  const Icon = item.icon;
-  return (
-    <button
-      key={item.id}
-      onClick={() => {
-        setActiveTab(item.id);
-        if (item.id === '2') navigate('/members');
-        else if (item.id === '3') navigate('/tasks');
-      }}
-      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors duration-200 mb-1 ${
-        activeTab === item.id
-          ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
-          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-      }`}
-    >
-      <Icon className="w-5 h-5" />
-      <span className="font-medium">{item.label}</span>
-    </button>
-  );
-})}
-
-
-        </nav>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-            <p className="text-gray-600 mt-2">Bienvenue sur TeamPulse! Voici un aperçu de l'activité de votre équipe.</p>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {statsCards.map((card, index) => (
-              <StatCard key={index} {...card} />
-            ))}
-          </div>
-
-          {/* Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Performance Chart */}
-            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Performance de l'équipe</h3>
-                <select className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option>7 derniers jours</option>
-                  <option>30 derniers jours</option>
-                  <option>3 derniers mois</option>
-                </select>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+      <div className="p-6 md:p-8 max-w-7xl mx-auto pt-16">
+        {/* En-tête amélioré */}
+        <div className="mb-8 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-3xl blur-xl"></div>
+          <div className="relative bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Tableau de Bord
+                </h1>
+                <p className="mt-2 text-slate-600 dark:text-slate-300 text-lg">
+                  Aperçu des performances de votre équipe ✨
+                </p>
               </div>
-              <div className="h-64 flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg">
-                <div className="text-center">
-                  <BarChart3 className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-                  <p className="text-gray-500">Graphique de performance</p>
-                  <p className="text-sm text-gray-400">Les données seront affichées ici</p>
+              <div className="flex items-center gap-3 mt-4 md:mt-0">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                  className="bg-white/50 hover:bg-white/80 border-white/30"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+                  Actualiser
+                </Button>
+                <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                  <Filter className="w-4 h-4 mr-2" />
+                  Filtres
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Cartes de statistiques améliorées */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {statsCards.map((card, index) => (
+            <Card key={index} className={`group hover:scale-105 transition-all duration-300 border-0 shadow-lg hover:shadow-2xl ${card.bgPattern} overflow-hidden relative`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent dark:from-white/10"></div>
+              <CardHeader className="relative flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                  {card.title}
+                </CardTitle>
+                <div className={`p-3 rounded-xl bg-gradient-to-r ${card.gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <card.icon className="w-5 h-5 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
+                  {card.value}
+                </div>
+                <div className="flex items-center">
+                  <div className={`flex items-center px-2 py-1 rounded-full ${
+                    card.trend === 'up' 
+                      ? 'bg-emerald-100 dark:bg-emerald-900' 
+                      : 'bg-rose-100 dark:bg-rose-900'
+                  }`}>
+                    {card.trend === 'up' ? (
+                      <ArrowUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <ArrowDown className="h-3 w-3 text-rose-600 dark:text-rose-400" />
+                    )}
+                    <span className={`ml-1 text-xs font-semibold ${
+                      card.trend === 'up' 
+                        ? 'text-emerald-600 dark:text-emerald-400' 
+                        : 'text-rose-600 dark:text-rose-400'
+                    }`}>
+                      {card.change}
+                    </span>
+                  </div>
+                  <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
+                    vs mois dernier
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Grille de contenu améliorée */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Graphique de performance */}
+          <Card className="lg:col-span-2 border-0 shadow-xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
+                    <TrendingUp className="w-5 h-5 text-white" />
+                  </div>
+                  <CardTitle className="text-xl">Performance de l'équipe</CardTitle>
+                </div>
+                <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+                  <SelectTrigger className="w-[180px] bg-white/50 dark:bg-slate-800/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="7">7 derniers jours</SelectItem>
+                    <SelectItem value="30">30 derniers jours</SelectItem>
+                    <SelectItem value="90">3 derniers mois</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64 flex items-center justify-center rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
+                <div className="relative flex flex-col items-center">
+                  <BarChart3 className="w-16 h-16 text-slate-400 mb-4" />
+                  <p className="text-slate-500 text-sm">Graphique interactif bientôt disponible</p>
                 </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Recent Activity */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Activité Récente</h3>
+          {/* Activités récentes améliorées */}
+          <Card className="border-0 shadow-xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg">
+                  <Activity className="w-5 h-5 text-white" />
+                </div>
+                <CardTitle className="text-xl">Activité Récente</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-4">
-                {recentActivities.map((activity, index) => (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className="group flex items-start space-x-4 p-3 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all duration-200">
+                    <div className="relative">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                        {activity.avatar}
+                      </div>
+                      <div className={`absolute -bottom-1 -right-1 w-4 h-4 ${getActivityColor(activity.type)} rounded-full border-2 border-white dark:border-slate-900`}></div>
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">
-                        <span className="font-medium">{activity.user}</span> {activity.action}
+                      <p className="text-sm text-slate-700 dark:text-slate-200">
+                        <span className="font-semibold">{activity.user}</span> {activity.action}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                      <p className="text-xs mt-1 text-slate-500 dark:text-slate-400">
+                        {activity.time}
+                      </p>
                     </div>
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium">
-                Voir toute l'activité
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions Rapides</h3>
-            <div className="flex flex-wrap gap-3">
-              <button className="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                <Users className="w-4 h-4" />
-                <span>Ajouter Membre</span>
-              </button>
-              <button className="flex items-center space-x-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                <Target className="w-4 h-4" />
-                <span>Nouveau Projet</span>
-              </button>
-              <button className="flex items-center space-x-2 bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors">
-                <BarChart3 className="w-4 h-4" />
-                <span>Voir Rapports</span>
-              </button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Actions rapides améliorées */}
+        <Card className="mt-8 border-0 shadow-xl bg-gradient-to-r from-white/70 to-slate-50/70 dark:from-slate-900/70 dark:to-slate-800/70 backdrop-blur-sm">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <CardTitle className="text-xl">Actions Rapides</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4">
+              <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200">
+                <Users className="w-4 h-4 mr-2" />
+                Ajouter Membre
+              </Button>
+              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200">
+                <Target className="w-4 h-4 mr-2" />
+                Nouveau Projet
+              </Button>
+              <Button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200">
+                <Star className="w-4 h-4 mr-2" />
+                Créer Rapport
+              </Button>
+              <Button className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-lg hover:shadow-xl transition-all duration-200">
+                <Plus className="w-4 h-4 mr-2" />
+                Plus d'actions
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;
