@@ -27,7 +27,6 @@ import {
   ChevronRight,
   Loader2
 } from "lucide-react";
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 interface StatCardProps {
   title: string;
@@ -49,6 +49,7 @@ interface StatCardProps {
 }
 
 export default function TasksList() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState<TaskFormData[]>([]);
   const [members, setMembers] = useState<MemberFormData[]>([]);
@@ -183,9 +184,9 @@ export default function TasksList() {
         <div className="bg-gradient-to-r from-primary/5 to-card rounded-2xl shadow-sm border border-border p-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Tableau de Bord des Tâches</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t('tasks.dashboardTitle')}</h1>
               <p className="text-muted-foreground mt-2">
-                Visualisez et gérez l'ensemble de vos tâches en temps réel
+                {t('tasks.dashboardSubtitle')}
               </p>
             </div>
             <Button 
@@ -194,7 +195,7 @@ export default function TasksList() {
             >
               <Link to="/tasks/new" className="flex items-center gap-2">
                 <Plus className="w-4 h-4" />
-                <span>Créer une Tâche</span>
+                <span>{t('tasks.createTask')}</span>
               </Link>
             </Button>
           </div>
@@ -203,7 +204,7 @@ export default function TasksList() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            title="Toutes les tâches"
+            title={t('tasks.allTasks')}
             count={taskCounts.all}
             icon={ListTodo}
             color="bg-primary"
@@ -212,7 +213,7 @@ export default function TasksList() {
             loading={isLoading}
           />
           <StatCard
-            title="À faire"
+            title={t('tasks.statusTodo')}
             count={taskCounts.todo}
             icon={Clock}
             color="bg-amber-500"
@@ -221,7 +222,7 @@ export default function TasksList() {
             loading={isLoading}
           />
           <StatCard
-            title="En cours"
+            title={t('tasks.statusInProgress')}
             count={taskCounts.in_progress}
             icon={PlayCircle}
             color="bg-blue-500"
@@ -230,7 +231,7 @@ export default function TasksList() {
             loading={isLoading}
           />
           <StatCard
-            title="Terminées"
+            title={t('tasks.statusDone')}
             count={taskCounts.done}
             icon={CheckCircle2}
             color="bg-emerald-500"
@@ -247,7 +248,7 @@ export default function TasksList() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Rechercher des tâches par titre ou description..."
+                placeholder={t('tasks.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -261,14 +262,14 @@ export default function TasksList() {
                 <SelectTrigger className="w-[180px]">
                   <div className="flex items-center gap-2">
                     <Filter className="w-4 h-4 text-muted-foreground" />
-                    <SelectValue placeholder="Filtrer par statut" />
+                    <SelectValue placeholder={t('tasks.filterByStatus')} />
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
-                  <SelectItem value="todo">À faire</SelectItem>
-                  <SelectItem value="in_progress">En cours</SelectItem>
-                  <SelectItem value="done">Terminé</SelectItem>
+                  <SelectItem value="all">{t('tasks.allStatuses')}</SelectItem>
+                  <SelectItem value="todo">{t('tasks.statusTodo')}</SelectItem>
+                  <SelectItem value="in_progress">{t('tasks.statusInProgress')}</SelectItem>
+                  <SelectItem value="done">{t('tasks.statusDone')}</SelectItem>
                 </SelectContent>
               </Select>
               {(searchTerm || statusFilter !== "all") && (
@@ -304,25 +305,25 @@ export default function TasksList() {
               {tasks.length === 0 ? (
                 <>
                   <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Aucune tâche trouvée
+                    {t('tasks.noneFound')}
                   </h3>
                   <p className="text-muted-foreground mb-6 text-center max-w-md">
-                    Commencez par créer votre première tâche pour organiser votre travail
+                    {t('tasks.noneFoundSubtitle')}
                   </p>
                   <Button asChild>
                     <Link to="/tasks/new" className="flex items-center gap-2">
                       <Plus className="w-4 h-4" />
-                      Créer une tâche
+                      {t('tasks.createTask')}
                     </Link>
                   </Button>
                 </>
               ) : (
                 <>
                   <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Aucun résultat
+                    {t('tasks.noResult')}
                   </h3>
                   <p className="text-muted-foreground text-center max-w-md mb-4">
-                    Aucune tâche ne correspond à vos critères de recherche
+                    {t('tasks.noResultSubtitle')}
                   </p>
                   <Button 
                     variant="outline"
@@ -333,7 +334,7 @@ export default function TasksList() {
                     className="flex items-center gap-2"
                   >
                     <X className="w-4 h-4" />
-                    Réinitialiser les filtres
+                    {t('tasks.resetFilters')}
                   </Button>
                 </>
               )}
@@ -343,13 +344,13 @@ export default function TasksList() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-lg font-semibold text-foreground">
-                    {statusFilter === "all" ? "Toutes les tâches" : 
-                     statusFilter === "todo" ? "Tâches à faire" :
-                     statusFilter === "in_progress" ? "Tâches en cours" :
-                     "Tâches terminées"}
+                    {statusFilter === "all" ? t('tasks.allTasks') : 
+                     statusFilter === "todo" ? t('tasks.tasksTodo') :
+                     statusFilter === "in_progress" ? t('tasks.tasksInProgress') :
+                     t('tasks.tasksDone')}
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    {filteredTasks.length} {filteredTasks.length > 1 ? "tâches" : "tâche"} trouvée{filteredTasks.length > 1 ? "s" : ""}
+                    {filteredTasks.length} {filteredTasks.length > 1 ? t('tasks.tasksPlural') : t('tasks.taskSingular')} {t('tasks.found')}
                   </p>
                 </div>
                 {statusFilter !== "all" && (
@@ -358,7 +359,7 @@ export default function TasksList() {
                     onClick={() => setStatusFilter("all")}
                     className="text-primary hover:text-primary/80 flex items-center gap-1"
                   >
-                    Voir toutes
+                    {t('tasks.seeAll')}
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 )}
@@ -385,19 +386,19 @@ export default function TasksList() {
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-destructive" />
-              Confirmer la suppression
+              {t('tasks.confirmDelete')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground pt-2">
-              Cette action est irréversible. La tâche sera définitivement supprimée de votre système.
+              {t('tasks.confirmDeleteDesc')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Annuler</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-lg">{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction 
               onClick={confirmDeleteTask}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg flex items-center gap-2"
             >
-              Supprimer définitivement
+              {t('tasks.deleteForever')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

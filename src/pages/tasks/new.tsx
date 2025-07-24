@@ -8,8 +8,10 @@ import { type MemberFormData } from "@/validation/schema";
 import { TaskForm } from "./TaskForm"
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function NewTask() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [members, setMembers] = useState<MemberFormData[]>([]);
   
@@ -69,7 +71,7 @@ export default function NewTask() {
             className="mb-4 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-slate-800/70 transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour aux tâches
+            {t('tasks.back')}
           </Button>
           
           <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">
@@ -79,9 +81,9 @@ export default function NewTask() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Créer une nouvelle tâche
+                  {t('tasks.createNew')}
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400 mt-1">Définissez les détails de votre nouvelle tâche</p>
+                <p className="text-slate-600 dark:text-slate-400 mt-1">{t('tasks.createNewSubtitle')}</p>
               </div>
             </div>
           </div>

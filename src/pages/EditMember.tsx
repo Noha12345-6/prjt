@@ -23,10 +23,12 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type MemberFormData = z.infer<typeof memberFormSchema>;
 
 export default function MemberEdit() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -49,8 +51,8 @@ export default function MemberEdit() {
       try {
         const savedMembers = localStorage.getItem("members");
         if (savedMembers) {
-          const members = JSON.parse(savedMembers);
-          const memberToEdit = members.find((m: any) => m.id === Number(id));
+          const members: MemberFormData[] = JSON.parse(savedMembers);
+          const memberToEdit = members.find((m: MemberFormData) => (m as any).id === Number(id));
           if (memberToEdit) {
             setMember(memberToEdit);
             form.reset(memberToEdit);
@@ -71,9 +73,9 @@ export default function MemberEdit() {
     try {
       const savedMembers = localStorage.getItem("members");
       if (savedMembers) {
-        const members = JSON.parse(savedMembers);
-        const updatedMembers = members.map((m: any) =>
-          m.id === Number(id) ? { ...data, id: Number(id) } : m
+        const members: MemberFormData[] = JSON.parse(savedMembers);
+        const updatedMembers = members.map((m: MemberFormData) =>
+          (m as any).id === Number(id) ? { ...data, id: Number(id) } : m
         );
         localStorage.setItem("members", JSON.stringify(updatedMembers));
       }
@@ -96,7 +98,7 @@ export default function MemberEdit() {
   if (!member) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-foreground">Member not found</p>
+        <p className="text-foreground">{t('members.notFound')}</p>
       </div>
     );
   }
@@ -104,8 +106,8 @@ export default function MemberEdit() {
   return (
     <div className="p-6 max-w-3xl mx-auto bg-card rounded-lg shadow-sm">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">Edit Member</h1>
-        <p className="text-muted-foreground">Update the member details below</p>
+        <h1 className="text-2xl font-bold text-foreground">{t('members.editTitle')}</h1>
+        <p className="text-muted-foreground">{t('members.editSubtitle')}</p>
       </header>
 
       <Form {...form}>
@@ -115,9 +117,9 @@ export default function MemberEdit() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name</FormLabel>
+                <FormLabel>{t('members.fullName')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder={t('members.fullNamePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,9 +131,9 @@ export default function MemberEdit() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t('members.email')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="john@example.com" {...field} />
+                  <Input placeholder={t('members.emailPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,11 +145,11 @@ export default function MemberEdit() {
             name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role</FormLabel>
+                <FormLabel>{t('members.role')}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a role" />
+                      <SelectValue placeholder={t('members.rolePlaceholder')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -168,7 +170,7 @@ export default function MemberEdit() {
             name="joinDate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Join Date</FormLabel>
+                <FormLabel>{t('members.joinDate')}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -182,11 +184,11 @@ export default function MemberEdit() {
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{t('members.status')}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder={t('members.statusPlaceholder')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -209,16 +211,16 @@ export default function MemberEdit() {
               onClick={() => navigate("/members")}
               disabled={isLoading}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t('common.saving')}
                 </>
               ) : (
-                "Save Changes"
+                t('members.saveChanges')
               )}
             </Button>
           </div>

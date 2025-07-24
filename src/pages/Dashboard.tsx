@@ -6,18 +6,28 @@ import {
   UserCheck, Clock, Target, Award, BarChart3, Users, ArrowUp, ArrowDown,
   TrendingUp, Activity, Zap, Star, Plus, Filter, RefreshCw
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Dashboard = () => {
+  const { t, i18n } = useTranslation();
   const [selectedPeriod, setSelectedPeriod] = useState('7');
   const [isLoading, setIsLoading] = useState(false);
 
   // Animation des compteurs
   const [animatedValues, setAnimatedValues] = useState({
-    members: 0,
-    projects: 0,
-    time: 0,
-    score: 0
+    members: 0 as number,
+    projects: 0 as number,
+    time: 0 as number,
+    score: 0 as number
   });
+
+  const [__forceLangRerender, setLang] = useState(i18n.language);
+
+  useEffect(() => {
+    const onLangChanged = () => setLang(i18n.language);
+    i18n.on('languageChanged', onLangChanged);
+    return () => i18n.off('languageChanged', onLangChanged);
+  }, [i18n]);
 
   useEffect(() => {
     const targets = { members: 42, projects: 18, time: 2.4, score: 94 };
@@ -34,7 +44,7 @@ const Dashboard = () => {
       setAnimatedValues({
         members: Math.floor(targets.members * easeOut),
         projects: Math.floor(targets.projects * easeOut),
-        time: (targets.time * easeOut).toFixed(1),
+        time: Number((targets.time * easeOut).toFixed(1)),
         score: Math.floor(targets.score * easeOut)
       });
 
@@ -49,7 +59,7 @@ const Dashboard = () => {
   // Données pour les cartes de statistiques avec animations
   const statsCards = [
     {
-      title: 'Membres Actifs',
+      title: t('dashboard.stats.activeMembers'),
       value: animatedValues.members,
       change: '12%',
       trend: 'up' as const,
@@ -58,7 +68,7 @@ const Dashboard = () => {
       bgPattern: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900'
     },
     {
-      title: 'Projets Complétés',
+      title: t('dashboard.stats.completedProjects'),
       value: animatedValues.projects,
       change: '8%',
       trend: 'up' as const,
@@ -67,7 +77,7 @@ const Dashboard = () => {
       bgPattern: 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900'
     },
     {
-      title: 'Temps Moyen',
+      title: t('dashboard.stats.avgTime'),
       value: `${animatedValues.time}h`,
       change: '15%',
       trend: 'down' as const,
@@ -76,7 +86,7 @@ const Dashboard = () => {
       bgPattern: 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900'
     },
     {
-      title: 'Score Performance',
+      title: t('dashboard.stats.performanceScore'),
       value: `${animatedValues.score}%`,
       change: '5%',
       trend: 'up' as const,
@@ -91,32 +101,32 @@ const Dashboard = () => {
     { 
       id: '1', 
       user: 'Marie Dupont', 
-      action: 'a complété le projet Alpha', 
-      time: 'il y a 2h',
+      action: t('dashboard.activities.completedProject', { project: 'Alpha' }),
+      time: t('dashboard.activities.timeAgo', { time: '2h' }),
       type: 'success',
       avatar: 'MD'
     },
     { 
       id: '2', 
       user: 'Pierre Martin', 
-      action: "a rejoint l'équipe Design", 
-      time: 'il y a 4h',
+      action: t('dashboard.activities.joinedTeam', { team: 'Design' }),
+      time: t('dashboard.activities.timeAgo', { time: '4h' }),
       type: 'info',
       avatar: 'PM'
     },
     { 
       id: '3', 
       user: 'Sophie Bernard', 
-      action: 'a mis à jour le rapport', 
-      time: 'il y a 6h',
+      action: t('dashboard.activities.updatedReport'),
+      time: t('dashboard.activities.timeAgo', { time: '6h' }),
       type: 'warning',
       avatar: 'SB'
     },
     { 
       id: '4', 
       user: 'Thomas Dubois', 
-      action: 'a créé une nouvelle tâche', 
-      time: 'il y a 8h',
+      action: t('dashboard.activities.createdTask'),
+      time: t('dashboard.activities.timeAgo', { time: '8h' }),
       type: 'info',
       avatar: 'TD'
     }
@@ -136,6 +146,8 @@ const Dashboard = () => {
     }
   };
 
+  console.log('DASHBOARD LANG:', i18n.language, t('dashboard.title'));
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
       <div className="p-6 md:p-8 max-w-7xl mx-auto pt-16">
@@ -146,10 +158,10 @@ const Dashboard = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between">
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Tableau de Bord
+                  {t('dashboard.title')}
                 </h1>
                 <p className="mt-2 text-slate-600 dark:text-slate-300 text-lg">
-                  Aperçu des performances de votre équipe ✨
+                  {t('dashboard.subtitle')}
                 </p>
               </div>
               <div className="flex items-center gap-3 mt-4 md:mt-0">
@@ -161,11 +173,11 @@ const Dashboard = () => {
                   className="bg-white/50 hover:bg-white/80 border-white/30"
                 >
                   <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                  Actualiser
+                  {t('dashboard.refresh')}
                 </Button>
                 <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
                   <Filter className="w-4 h-4 mr-2" />
-                  Filtres
+                  {t('dashboard.filters')}
                 </Button>
               </div>
             </div>
@@ -209,7 +221,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <span className="ml-2 text-xs text-slate-500 dark:text-slate-400">
-                    vs mois dernier
+                    {t('dashboard.vsLastMonth')}
                   </span>
                 </div>
               </CardContent>
@@ -227,16 +239,16 @@ const Dashboard = () => {
                   <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
                     <TrendingUp className="w-5 h-5 text-white" />
                   </div>
-                  <CardTitle className="text-xl">Performance de l'équipe</CardTitle>
+                  <CardTitle className="text-xl">{t('dashboard.performanceTitle')}</CardTitle>
                 </div>
                 <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                   <SelectTrigger className="w-[180px] bg-white/50 dark:bg-slate-800/50">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="7">7 derniers jours</SelectItem>
-                    <SelectItem value="30">30 derniers jours</SelectItem>
-                    <SelectItem value="90">3 derniers mois</SelectItem>
+                    <SelectItem value="7">{t('dashboard.period.7days')}</SelectItem>
+                    <SelectItem value="30">{t('dashboard.period.30days')}</SelectItem>
+                    <SelectItem value="90">{t('dashboard.period.3months')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -246,7 +258,7 @@ const Dashboard = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
                 <div className="relative flex flex-col items-center">
                   <BarChart3 className="w-16 h-16 text-slate-400 mb-4" />
-                  <p className="text-slate-500 text-sm">Graphique interactif bientôt disponible</p>
+                  <p className="text-slate-500 text-sm">{t('dashboard.chartSoon')}</p>
                 </div>
               </div>
             </CardContent>
@@ -259,7 +271,7 @@ const Dashboard = () => {
                 <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg">
                   <Activity className="w-5 h-5 text-white" />
                 </div>
-                <CardTitle className="text-xl">Activité Récente</CardTitle>
+                <CardTitle className="text-xl">{t('dashboard.recentActivity')}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -294,26 +306,26 @@ const Dashboard = () => {
               <div className="p-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg">
                 <Zap className="w-5 h-5 text-white" />
               </div>
-              <CardTitle className="text-xl">Actions Rapides</CardTitle>
+              <CardTitle className="text-xl">{t('dashboard.quickActions')}</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-4">
               <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200">
                 <Users className="w-4 h-4 mr-2" />
-                Ajouter Membre
+                {t('dashboard.addMember')}
               </Button>
               <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200">
                 <Target className="w-4 h-4 mr-2" />
-                Nouveau Projet
+                {t('dashboard.newProject')}
               </Button>
               <Button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200">
                 <Star className="w-4 h-4 mr-2" />
-                Créer Rapport
+                {t('dashboard.createReport')}
               </Button>
               <Button className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-lg hover:shadow-xl transition-all duration-200">
                 <Plus className="w-4 h-4 mr-2" />
-                Plus d'actions
+                {t('dashboard.moreActions')}
               </Button>
             </div>
           </CardContent>

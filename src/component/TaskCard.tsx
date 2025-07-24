@@ -2,20 +2,21 @@ import type { TaskFormData } from "@/validation/schemasTask";
 import type { MemberFormData } from "@/validation/schema";
 import { useNavigate } from "react-router-dom";
 import { Calendar, User, CheckCircle2, Clock, PlayCircle, Edit2, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface TaskCardProps {
   task: TaskFormData;
   members: MemberFormData[];
-  onEdit?: (task: TaskFormData) => void;
   onDelete?: (taskId: number) => void;
 }
 
-export function TaskCard({ task, members, onEdit, onDelete }: TaskCardProps) {
+export function TaskCard({ task, members, onDelete }: TaskCardProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const getMemberName = (id: number) => {
     const member = members.find(m => m.id === id);
-    return member ? member.name : "Unassigned";
+    return member ? member.name : t("unassigned");
   };
 
   const getStatusConfig = (status: string) => {
@@ -26,7 +27,7 @@ export function TaskCard({ task, members, onEdit, onDelete }: TaskCardProps) {
           text: "text-emerald-700 dark:text-emerald-400",
           badge: "bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-700",
           icon: CheckCircle2,
-          label: "Terminé"
+          label: t("status.done")
         };
       case "in_progress":
         return {
@@ -34,7 +35,7 @@ export function TaskCard({ task, members, onEdit, onDelete }: TaskCardProps) {
           text: "text-blue-700 dark:text-blue-400",
           badge: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-700",
           icon: PlayCircle,
-          label: "En cours"
+          label: t("status.in_progress")
         };
       default:
         return {
@@ -42,7 +43,7 @@ export function TaskCard({ task, members, onEdit, onDelete }: TaskCardProps) {
           text: "text-foreground/80",
           badge: "bg-muted text-foreground/70 border-border",
           icon: Clock,
-          label: "À faire"
+          label: t("status.todo")
         };
     }
   };
@@ -79,10 +80,10 @@ export function TaskCard({ task, members, onEdit, onDelete }: TaskCardProps) {
           className="p-2 rounded-lg bg-background/90 backdrop-blur-sm shadow-sm hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-all
                     border border-border hover:border-blue-300 dark:hover:border-blue-700
                     flex items-center justify-center"
-          aria-label="Modifier la tâche"
+          aria-label={t("edit-task")}
         >
           <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          <span className="ml-2 text-sm font-medium text-blue-600 dark:text-blue-400 hidden sm:inline">Éditer</span>
+          <span className="ml-2 text-sm font-medium text-blue-600 dark:text-blue-400 hidden sm:inline">{t("edit")}</span>
         </button>
         
         <button 
@@ -97,10 +98,10 @@ export function TaskCard({ task, members, onEdit, onDelete }: TaskCardProps) {
           className="p-2 rounded-lg bg-background/90 backdrop-blur-sm shadow-sm hover:bg-destructive/10 transition-all
                     border border-border hover:border-destructive/50
                     flex items-center justify-center"
-          aria-label="Supprimer la tâche"
+          aria-label={t("delete-task")}
         >
           <Trash2 className="w-4 h-4 text-destructive dark:text-destructive-foreground" />
-          <span className="ml-2 text-sm font-medium text-destructive dark:text-destructive-foreground hidden sm:inline">Supprimer</span>
+          <span className="ml-2 text-sm font-medium text-destructive dark:text-destructive-foreground hidden sm:inline">{t("delete")}</span>
         </button>
       </div>
 
@@ -119,7 +120,7 @@ export function TaskCard({ task, members, onEdit, onDelete }: TaskCardProps) {
             statusConfig.badge}
         `}>
           <StatusIcon className="w-3.5 h-3.5" />
-          {isOverdue && task.status !== "done" ? "En retard" : statusConfig.label}
+          {isOverdue && task.status !== "done" ? t("overdue") : statusConfig.label}
         </div>
       </div>
       

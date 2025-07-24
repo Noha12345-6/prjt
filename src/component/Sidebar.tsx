@@ -26,17 +26,30 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
+
+interface SidebarNavItem {
+  id: string;
+  labelKey: string;
+  icon: React.ElementType;
+  path: string;
+  color?: string;
+  hasDropdown?: boolean;
+  subItems?: SidebarNavItem[];
+  badge?: number;
+}
+
 const sidebarItems = [
     { 
       id: "dashboard", 
-      label: "Dashboard", 
+      labelKey: "dashboard.title", 
       icon: Home, 
       path: "/",
       color: "from-blue-500 to-blue-600"
     },
     {
       id: "members",
-      label: "Gestion de Membres",
+      labelKey: "members-management",
       icon: Users,
       path: "/members",
       hasDropdown: true,
@@ -44,13 +57,13 @@ const sidebarItems = [
       subItems: [
         { 
           id: "add-member", 
-          label: "Ajouter Membre", 
+          labelKey: "add-member", 
           icon: UserPlus, 
           path: "/members/add"
         },
         { 
           id: "view-members", 
-          label: "Voir Membres", 
+          labelKey: "view-members", 
           icon: Eye, 
           path: "/members"
         },
@@ -58,7 +71,7 @@ const sidebarItems = [
     },
     {
       id: "tasks",
-      label: "Gestion des Tâches",
+      labelKey: "tasks-management",
       icon: BarChart3,
       path: "/tasks",
       hasDropdown: true,
@@ -66,13 +79,13 @@ const sidebarItems = [
       subItems: [
         { 
           id: "add-task", 
-          label: "Nouvelle Tâche", 
+          labelKey: "add-task", 
           icon: Plus, 
           path: "/tasks/new"
         },
         { 
           id: "view-tasks", 
-          label: "Liste des Tâches", 
+          labelKey: "view-tasks", 
           icon: List, 
           path: "/tasks"
         },
@@ -83,24 +96,33 @@ const sidebarItems = [
   const bottomItems = [
     {
       id: "notifications",
-      label: "Notifications",
+      labelKey: "notifications",
       icon: Bell,
       path: "/notifications",
       badge: 3
     },
     {
       id: "settings",
-      label: "Paramètres",
+      labelKey: "settings",
       icon: Settings,
       path: "/settings"
     }
   ];
 
 export default function Sidebar() {
+  const { t, i18n } = useTranslation();
+  const [__forceLangRerender, setLang] = useState(i18n.language);
+
+  useEffect(() => {
+    const onLangChanged = () => setLang(i18n.language);
+    i18n.on('languageChanged', onLangChanged);
+    return () => i18n.off('languageChanged', onLangChanged);
+  }, [i18n]);
+
   const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [openDropdowns, setOpenDropdowns] = useState({
+  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({
     members: false,
     tasks: false,
   });
@@ -128,7 +150,7 @@ export default function Sidebar() {
     return mainItem?.id || "dashboard";
   });
 
-  const toggleDropdown = (id) => {
+  const toggleDropdown = (id: string) => {
     setOpenDropdowns((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -144,7 +166,7 @@ export default function Sidebar() {
     }
   };
 
-  const handleItemClick = (item) => {
+  const handleItemClick = (item: SidebarNavItem) => {
     if (item.path && !item.hasDropdown) {
       navigate(item.path);
       setActiveItem(item.id);
@@ -154,15 +176,22 @@ export default function Sidebar() {
     }
   };
 
-  const handleSubItemClick = (subItem) => {
+  const handleSubItemClick = (subItem: SidebarNavItem) => {
     navigate(subItem.path);
     setActiveItem(subItem.id);
   };
 
-  const isItemActive = (itemId) => activeItem === itemId;
-  const isDropdownOpen = (itemId) => openDropdowns[itemId];
+  const isItemActive = (itemId: string) => activeItem === itemId;
+  const isDropdownOpen = (itemId: string) => openDropdowns[itemId] ?? false;
 
-  const SidebarItem = ({ item, isActive, onClick, children }) => {
+  interface SidebarItemProps {
+    item: SidebarNavItem;
+    isActive: boolean;
+    onClick: () => void;
+    children?: React.ReactNode;
+  }
+
+  const SidebarItem = ({ item, isActive, onClick, children }: SidebarItemProps) => {
     const Icon = item.icon;
     const content = (
       <Button
@@ -183,7 +212,7 @@ export default function Sidebar() {
         </div>
         {!isCollapsed && (
           <>
-            <span className="font-medium text-sm">{item.label}</span>
+            <span className="font-medium text-sm">{t(item.labelKey)}</span>
             {children}
           </>
         )}
@@ -198,7 +227,7 @@ export default function Sidebar() {
               {content}
             </TooltipTrigger>
             <TooltipContent side="right" className="font-medium">
-              {item.label}
+              {t(item.labelKey)}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -293,7 +322,7 @@ export default function Sidebar() {
                             }`}>
                               <SubIcon className="w-3 h-3" />
                             </div>
-                            <span>{sub.label}</span>
+                            <span>{t(sub.labelKey)}</span>
                           </Button>
                         );
                       })}

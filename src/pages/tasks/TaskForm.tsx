@@ -32,6 +32,7 @@ import {
   ArrowLeft,
   Plus
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface TaskFormProps {
   form: any; // Ou utilisez le type correct Form<TaskFormData>
@@ -63,6 +64,7 @@ const getStatusConfig = (status: string) => {
 };
 
 export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) => {
+  const { t } = useTranslation();
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="p-8 space-y-8">
@@ -70,7 +72,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
         <div className="space-y-6">
           <div className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-300 pb-2 border-b border-slate-200 dark:border-slate-700">
             <FileText className="w-5 h-5 text-blue-500 dark:text-blue-400" />
-            Informations principales
+            {t('tasks.mainInfo')}
           </div>
 
           {/* Title Field */}
@@ -81,11 +83,11 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
               <FormItem>
                 <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                   <ClipboardList className="w-4 h-4" />
-                  Titre de la tâche
+                  {t('tasks.title')}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ex: Développer la nouvelle fonctionnalité..."
+                    placeholder={t('tasks.titlePlaceholder')}
                     {...field}
                     className="h-12 text-base bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus:border-blue-400 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-all duration-200 hover:bg-white/80 dark:hover:bg-slate-800/80"
                   />
@@ -103,11 +105,11 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
               <FormItem>
                 <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  Description détaillée
+                  {t('tasks.description')}
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Décrivez les détails de la tâche, les objectifs et les livrables attendus..."
+                    placeholder={t('tasks.descriptionPlaceholder')}
                     {...field}
                     rows={4}
                     className="resize-none bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus:border-blue-400 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-all duration-200 hover:bg-white/80 dark:hover:bg-slate-800/80"
@@ -123,7 +125,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
         <div className="space-y-6">
           <div className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-300 pb-2 border-b border-slate-200 dark:border-slate-700">
             <Flag className="w-5 h-5 text-purple-500 dark:text-purple-400" />
-            Configuration de la tâche
+            {t('tasks.configSection')}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -138,7 +140,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                       <StatusIcon className="w-4 h-4" />
-                      Statut
+                      {t('tasks.status')}
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -146,26 +148,26 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
                     >
                       <FormControl>
                         <SelectTrigger className={`h-12 ${statusConfig.bg} border-2 hover:bg-white dark:hover:bg-slate-800 transition-all duration-200`}>
-                          <SelectValue placeholder="Sélectionner le statut" />
+                          <SelectValue placeholder={t('tasks.statusPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm">
                         <SelectItem value="todo" className="flex items-center gap-2">
                           <div className="flex items-center gap-2">
                             <ClipboardList className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                            À faire
+                            {t('tasks.statusTodo')}
                           </div>
                         </SelectItem>
                         <SelectItem value="in_progress">
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-                            En cours
+                            {t('tasks.statusInProgress')}
                           </div>
                         </SelectItem>
                         <SelectItem value="done">
                           <div className="flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-                            Terminé
+                            {t('tasks.statusDone')}
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -187,7 +189,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                       <PriorityIcon className="w-4 h-4" />
-                      Priorité
+                      {t('tasks.priority')}
                     </FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -195,26 +197,26 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
                     >
                       <FormControl>
                         <SelectTrigger className={`h-12 ${priorityConfig.bg} border-2 hover:bg-white dark:hover:bg-slate-800 transition-all duration-200`}>
-                          <SelectValue placeholder="Sélectionner la priorité" />
+                          <SelectValue placeholder={t('tasks.priorityPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm">
                         <SelectItem value="low">
                           <div className="flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4 text-green-500 dark:text-green-400" />
-                            Faible
+                            {t('tasks.priorityLow')}
                           </div>
                         </SelectItem>
                         <SelectItem value="medium">
                           <div className="flex items-center gap-2">
                             <Flag className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                            Moyenne
+                            {t('tasks.priorityMedium')}
                           </div>
                         </SelectItem>
                         <SelectItem value="high">
                           <div className="flex items-center gap-2">
                             <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400" />
-                            Élevée
+                            {t('tasks.priorityHigh')}
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -233,7 +235,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
-                    Date d'échéance
+                    {t('tasks.dueDate')}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -254,7 +256,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
         <div className="space-y-6">
           <div className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-300 pb-2 border-b border-slate-200 dark:border-slate-700">
             <Users className="w-5 h-5 text-green-500 dark:text-green-400" />
-            Assignation
+            {t('tasks.assignSection')}
           </div>
 
           <FormField
@@ -264,7 +266,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
               <FormItem>
                 <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
                   <Users className="w-4 h-4" />
-                  Assigner à un membre de l'équipe
+                  {t('tasks.assignTo')}
                 </FormLabel>
                 <Select
                   onValueChange={(value) => field.onChange(Number(value))}
@@ -272,7 +274,7 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
                 >
                   <FormControl>
                     <SelectTrigger className="h-12 bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus:border-blue-400 dark:focus:border-blue-500 hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all duration-200">
-                      <SelectValue placeholder="Choisir un membre de l'équipe" />
+                      <SelectValue placeholder={t('tasks.assignPlaceholder')} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm">
@@ -308,14 +310,14 @@ export const TaskForm = ({ form, members, onSubmit, onCancel }: TaskFormProps) =
             className="px-8 h-12 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Annuler
+            {t('common.cancel')}
           </Button>
           <Button
             type="submit"
             className="px-8 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Créer la tâche
+            {t('tasks.createTask')}
           </Button>
         </div>
       </form>

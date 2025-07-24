@@ -1,38 +1,30 @@
 import { ThemeToggle } from "./ThemeToggle";
-import { useTheme } from "./ThemeContext";
 import { Button } from "../components/ui/button";
-import { useState } from "react"; 
+import { useTranslation } from "react-i18next";
 
 export const Header = () => {
-  const { isDark } = useTheme();
-  const [language, setLanguage] = useState('fr'); // État pour gérer la langue
+  const { t, i18n } = useTranslation();
 
   const toggleLanguage = () => {
     // Rotation entre français, arabe et anglais
-    setLanguage(prev => 
-      prev === 'fr' ? 'ar' : 
-      prev === 'ar' ? 'en' : 
+    i18n.changeLanguage(
+      i18n.language === 'fr' ? 'ar' :
+      i18n.language === 'ar' ? 'en' :
       'fr'
     );
   };
 
   const getLanguageLabel = () => {
-    return language === 'fr' ? 'FR' : 
-           language === 'ar' ? 'AR' : 
+    return i18n.language === 'fr' ? 'FR' :
+           i18n.language === 'ar' ? 'AR' :
            'EN';
-  };
-
-  const getDashboardTitle = () => {
-    return language === 'fr' ? 'Tableau de Bord' : 
-           language === 'ar' ? 'لوحة القيادة' : 
-           'Dashboard';
   };
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="px-6 py-4 flex justify-between items-center">
         <h1 className="text-xl font-semibold text-foreground">
-          {getDashboardTitle()}
+          {t('dashboard.title')}
         </h1>
         <div className="flex items-center gap-2">
           <Button 

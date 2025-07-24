@@ -28,6 +28,7 @@ import {
 
 import { MemberRoles } from "@/validation/schema";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   form: any;
@@ -36,6 +37,7 @@ type Props = {
 };
 
 export default function MemberFormCard({ form, onSubmit, isEditMode = false }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -47,12 +49,12 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
           </div>
           <div>
             <h2 className="text-xl font-semibold">
-              {isEditMode ? "Edit Member" : "Member Information"}
+              {isEditMode ? t('members.editTitle') : t('members.infoTitle')}
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
               {isEditMode 
-                ? "Update the details of this team member" 
-                : "Fill in the details below to add a new team member"}
+                ? t('members.editCardSubtitle')
+                : t('members.infoSubtitle')}
             </p>
           </div>
         </div>
@@ -65,7 +67,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
             <div className="space-y-6">
               <div className="flex items-center gap-2 pb-2 border-b">
                 <User className="w-4 h-4 text-muted-foreground" />
-                <h3 className="font-medium">Personal Information</h3>
+                <h3 className="font-medium">{t('members.personalInfo')}</h3>
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
@@ -76,11 +78,11 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                     <FormItem className="space-y-2">
                       <FormLabel className="flex items-center gap-2">
                         <User className="w-3 h-3" />
-                        Full Name *
+                        {t('members.fullName')} *
                       </FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="Enter full name" 
+                          placeholder={t('members.fullNamePlaceholder')} 
                           className="h-11"
                           {...field} 
                         />
@@ -97,12 +99,12 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                     <FormItem className="space-y-2">
                       <FormLabel className="flex items-center gap-2">
                         <Mail className="w-3 h-3" />
-                        Email Address *
+                        {t('members.email')} *
                       </FormLabel>
                       <FormControl>
                         <Input 
                           type="email" 
-                          placeholder="email@example.com" 
+                          placeholder={t('members.emailPlaceholder')} 
                           className="h-11"
                           {...field} 
                         />
@@ -118,7 +120,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
             <div className="space-y-6">
               <div className="flex items-center gap-2 pb-2 border-b">
                 <Shield className="w-4 h-4 text-muted-foreground" />
-                <h3 className="font-medium">Role & Status</h3>
+                <h3 className="font-medium">{t('members.roleStatus')}</h3>
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
@@ -129,7 +131,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                     <FormItem className="space-y-2">
                       <FormLabel className="flex items-center gap-2">
                         <Shield className="w-3 h-3" />
-                        Role *
+                        {t('members.role')} *
                       </FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
@@ -138,7 +140,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                       >
                         <FormControl>
                           <SelectTrigger className="h-11">
-                            <SelectValue placeholder="Select a role" />
+                            <SelectValue placeholder={t('members.rolePlaceholder')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -166,7 +168,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                     <FormItem className="space-y-2">
                       <FormLabel className="flex items-center gap-2">
                         <Activity className="w-3 h-3" />
-                        Status
+                        {t('members.status')}
                       </FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
@@ -175,20 +177,20 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                       >
                         <FormControl>
                           <SelectTrigger className="h-11">
-                            <SelectValue placeholder="Select status" />
+                            <SelectValue placeholder={t('members.statusPlaceholder')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="active">
                             <div className="flex items-center gap-3">
                               <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                              <span>Active</span>
+                              <span>{t('members.active')}</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="inactive">
                             <div className="flex items-center gap-3">
                               <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                              <span>Inactive</span>
+                              <span>{t('members.inactive')}</span>
                             </div>
                           </SelectItem>
                         </SelectContent>
@@ -204,7 +206,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
             <div className="space-y-6">
               <div className="flex items-center gap-2 pb-2 border-b">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
-                <h3 className="font-medium">Timeline</h3>
+                <h3 className="font-medium">{t('members.timeline')}</h3>
               </div>
               
               <FormField
@@ -214,7 +216,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                   <FormItem className="space-y-2 max-w-sm">
                     <FormLabel className="flex items-center gap-2">
                       <Calendar className="w-3 h-3" />
-                      Join Date *
+                      {t('members.joinDate')} *
                     </FormLabel>
                     <FormControl>
                       <Input 
@@ -235,7 +237,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
               <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <h3 className="font-medium">Preview</h3>
+                  <h3 className="font-medium">{t('members.preview')}</h3>
                 </div>
                 <div className="bg-accent rounded-lg p-4 border">
                   <div className="flex items-center gap-3">
@@ -251,7 +253,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                         </div>
                         <div className={`flex items-center gap-1 text-xs ${form.watch("status") === 'active' ? 'text-green-600' : 'text-red-600'}`}>
                           <div className={`w-1.5 h-1.5 rounded-full ${form.watch("status") === 'active' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                          {form.watch("status")?.charAt(0).toUpperCase() + form.watch("status")?.slice(1)}
+                          {form.watch("status") === 'active' ? t('members.active') : t('members.inactive')}
                         </div>
                       </div>
                     </div>
@@ -268,7 +270,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                 onClick={() => navigate("/members")}
                 className="h-11 px-6"
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -276,7 +278,7 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                 className="h-11 px-8"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                {isEditMode ? "Update Member" : "Add Member"}
+                {isEditMode ? t('members.updateMember') : t('members.addMember')}
               </Button>
             </div>
           </form>
