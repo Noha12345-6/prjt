@@ -30,7 +30,7 @@ export default function AppRoutes() {
           children: [
             { index: true, element: <TasksList /> },
             { path: "new", element: <NewTask /> },
-            { path: "edit/:id", element: <EditTask /> }
+            { path: "edit/:id", element: <EditTask key={i18n.language} /> }
           ]
         },
         { path: "*", element: <Dashboard key={i18n.language} /> } // Page par défaut

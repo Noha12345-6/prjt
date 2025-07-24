@@ -67,11 +67,22 @@
     "status": "Status",
     "statusPlaceholder": "Select status",
     "saveChanges": "Save Changes",
-    "notFound": "Member not found"
+    "notFound": "Member not found",
+    "infoTitle": "Member Information",
+    "infoSubtitle": "Fill in the details below to add a new team member",
+    "editCardSubtitle": "Update the details of this team member",
+    "personalInfo": "Personal Information",
+    "roleStatus": "Role & Status",
+    "timeline": "Timeline",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "common": {
+    "edit": "Edit",
+    "delete": "Delete",
     "cancel": "Cancel",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "save": "Save"
   },
   "tasks": {
     "mainInfo": "Main Information",
@@ -118,6 +129,43 @@
     "seeAll": "See all",
     "confirmDelete": "Confirm deletion",
     "confirmDeleteDesc": "This action is irreversible. The task will be permanently deleted from your system.",
-    "deleteForever": "Delete forever"
+    "deleteForever": "Delete forever",
+    "notFound": "Task not found",
+    "loadError": "Failed to load data",
+    "updatedSuccess": "Task updated successfully",
+    "saveError": "An error occurred while saving",
+    "loading": "Loading...",
+    "notFoundTitle": "Task not found",
+    "notFoundDesc": "The task you are trying to edit does not exist or has been deleted.",
+    "editTaskTitle": "Edit Task",
+    "editTaskSubtitle": "Update your task details",
+    "save": "Save"
+  },
+  "membersList": {
+    "title": "Team Members",
+    "addMember": "Add Member",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "joinDate": "Join Date",
+    "status": "Status",
+    "status_active": "Active",
+    "status_inactive": "Inactive",
+    "unknown": "Unknown",
+    "actions": "Actions",
+    "openMenu": "Open menu",
+    "searchLabel": "Search members",
+    "searchPlaceholder": "Search members...",
+    "filterByRole": "Filter by Role:",
+    "allRoles": "All roles",
+    "filterByStatus": "Filter by Status:",
+    "allStatuses": "All statuses",
+    "noMembers": "No members found",
+    "noMembersSubtitle": "Try adjusting your search or filter",
+    "showing": "Showing",
+    "of": "of",
+    "members": "members",
+    "previous": "Previous",
+    "next": "Next"
   }
 } 

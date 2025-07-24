@@ -5,8 +5,16 @@ import { taskFormSchema } from "@/validation/schemasTask";
 import type { TaskFormData } from "@/validation/schemasTask";
 import type { MemberFormData } from "@/validation/schema";
 import EditTaskForm from "../../component/EditTaskForm";
+import { useTranslation } from "react-i18next";
 
 export default function EditTaskContainer() {
+  const { t, i18n } = useTranslation();
+  const [__forceLangRerender, setLang] = useState(i18n.language);
+  useEffect(() => {
+    const onLangChanged = () => setLang(i18n.language);
+    i18n.on('languageChanged', onLangChanged);
+    return () => i18n.off('languageChanged', onLangChanged);
+  }, [i18n]);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [task, setTask] = useState<TaskFormData | null>(null);
@@ -26,7 +34,7 @@ export default function EditTaskContainer() {
           if (taskToEdit) {
             setTask(taskToEdit);
           } else {
-            toast.error("Tâche non trouvée");
+            toast.error(t('tasks.notFound'));
             navigate("/tasks");
           }
         }
@@ -36,64 +44,60 @@ export default function EditTaskContainer() {
         }
       } catch (error) {
         console.error("Erreur de chargement:", error);
-        toast.error("Échec du chargement des données");
+        toast.error(t('tasks.loadError'));
       } finally {
         setIsLoading(false);
       }
     };
 
     loadData();
-  }, [id, navigate]);
+  }, [id, navigate, t]);
 
   const handleSubmit = (formData: TaskFormData) => {
- 
-  const processedData = {
-    ...formData,
-    memberId: Number(formData.memberId), 
-    id: Number(formData.id), 
+    const processedData = {
+      ...formData,
+      memberId: Number(formData.memberId), 
+      id: Number(formData.id), 
+    };
+
+    try {
+      // Validation avec Zod
+      const result = taskFormSchema.safeParse(processedData);
+      if (!result.success) {
+        result.error.errors.forEach((err) => {
+          toast.error(`${err.path.join('.')}: ${err.message}`);
+        });
+        return;
+      }
+      const savedTasks = localStorage.getItem("tasks");
+      if (savedTasks) {
+        const tasks: TaskFormData[] = JSON.parse(savedTasks);
+        const updatedTasks = tasks.map(t => t.id === processedData.id ? processedData : t);
+        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+        toast.success(t('tasks.updatedSuccess'));
+        navigate("/tasks");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error(t('tasks.saveError'));
+    }
   };
 
-  try {
-    // Validation avec Zod
-    const result = taskFormSchema.safeParse(processedData);
-    
-    if (!result.success) {
-     
-      result.error.errors.forEach((err) => {
-        toast.error(`${err.path.join('.')}: ${err.message}`);
-      });
-      return;
-    }
-
-    
-    const savedTasks = localStorage.getItem("tasks");
-    if (savedTasks) {
-      const tasks: TaskFormData[] = JSON.parse(savedTasks);
-      const updatedTasks = tasks.map(t => t.id === processedData.id ? processedData : t);
-      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-      toast.success("Tâche mise à jour avec succès");
-      navigate("/tasks");
-    }
-  } catch (error) {
-    console.error("Erreur:", error);
-    toast.error("Une erreur est survenue lors de la sauvegarde");
-  }
-};
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
+    return <div className="min-h-screen flex items-center justify-center">{t('tasks.loading')}</div>;
   }
 
   if (!task) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center p-8 max-w-md bg-white rounded-xl shadow-sm border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Tâche introuvable</h2>
-          <p className="text-gray-600 mb-6">La tâche que vous essayez de modifier n'existe pas ou a été supprimée.</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">{t('tasks.notFoundTitle')}</h2>
+          <p className="text-gray-600 mb-6">{t('tasks.notFoundDesc')}</p>
           <button 
             onClick={() => navigate("/tasks")} 
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
           >
-            Retour aux tâches
+            {t('tasks.back')}
           </button>
         </div>
       </div>

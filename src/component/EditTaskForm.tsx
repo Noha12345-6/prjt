@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Clock, PlayCircle, Save, ArrowLeft } from "lucide-react";
+import { Save, ArrowLeft } from "lucide-react";
 import { TaskStatuses, TaskPriorities } from "@/validation/schemasTask";
 import type { TaskFormData } from "@/validation/schemasTask";
 import type { MemberFormData } from "@/validation/schema";
+import { useTranslation } from "react-i18next";
 
 interface EditTaskFormProps {
   task: TaskFormData;
@@ -13,6 +14,7 @@ interface EditTaskFormProps {
 }
 
 export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<TaskFormData>(task);
 
@@ -26,32 +28,6 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
     onSubmit(formData);
   };
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "done":
-        return {
-          bg: "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800",
-          text: "text-emerald-700 dark:text-emerald-300",
-          icon: CheckCircle2,
-          iconColor: "text-emerald-500 dark:text-emerald-400"
-        };
-      case "in_progress":
-        return {
-          bg: "bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-800",
-          text: "text-blue-700 dark:text-blue-300",
-          icon: PlayCircle,
-          iconColor: "text-blue-500 dark:text-blue-400"
-        };
-      default:
-        return {
-          bg: "bg-orange-50 dark:bg-orange-900/30 border-orange-100 dark:border-orange-800",
-          text: "text-orange-700 dark:text-orange-300",
-          icon: Clock,
-          iconColor: "text-orange-500 dark:text-orange-400"
-        };
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background py-8 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
@@ -62,7 +38,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
             className="flex items-center gap-2"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Retour aux tâches</span>
+            <span className="text-sm font-medium">{t('tasks.back')}</span>
           </Button>
         </div>
 
@@ -75,9 +51,9 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                   <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
                 </svg>
               </span>
-              <span>Modifier la Tâche</span>
+              <span>{t('tasks.editTaskTitle')}</span>
             </h1>
-            <p className="text-muted-foreground mt-2 ml-11">Mettez à jour les détails de votre tâche</p>
+            <p className="text-muted-foreground mt-2 ml-11">{t('tasks.editTaskSubtitle')}</p>
           </div>
 
           <form onSubmit={handleFormSubmit} className="p-6 space-y-6">
@@ -93,7 +69,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                       <line x1="16" y1="3" x2="14" y2="21"></line>
                     </svg>
                   </span>
-                  Titre <span className="text-destructive ml-1">*</span>
+                  {t('tasks.title')} <span className="text-destructive ml-1">*</span>
                 </label>
                 <input
                   type="text"
@@ -103,7 +79,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 bg-background text-foreground"
                   required
-                  placeholder="Entrez le titre de la tâche"
+                  placeholder={t('tasks.titlePlaceholder')}
                 />
               </div>
 
@@ -115,7 +91,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
                   </span>
-                  Description
+                  {t('tasks.description')}
                 </label>
                 <textarea
                   id="description"
@@ -124,7 +100,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                   onChange={handleInputChange}
                   rows={4}
                   className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 bg-background text-foreground"
-                  placeholder="Ajoutez une description détaillée..."
+                  placeholder={t('tasks.descriptionPlaceholder')}
                 />
               </div>
 
@@ -137,7 +113,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                       <path d="M12 8v4l3 3"></path>
                     </svg>
                   </span>
-                  Statut <span className="text-destructive ml-1">*</span>
+                  {t('tasks.status')} <span className="text-destructive ml-1">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -148,14 +124,11 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                     className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent appearance-none transition-all duration-200 bg-background text-foreground"
                     required
                   >
-                    {TaskStatuses.map(status => {
-                      const config = getStatusConfig(status);
-                      return (
-                        <option key={status} value={status}>
-                          {status.replace("_", " ")}
-                        </option>
-                      );
-                    })}
+                    {TaskStatuses.map(status => (
+                      <option key={status} value={status}>
+                        {t(`tasks.status${status.charAt(0).toUpperCase() + status.slice(1)}`)}
+                      </option>
+                    ))}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg className="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -173,7 +146,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                   </span>
-                  Priorité <span className="text-destructive ml-1">*</span>
+                  {t('tasks.priority')} <span className="text-destructive ml-1">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -186,7 +159,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                   >
                     {TaskPriorities.map(priority => (
                       <option key={priority} value={priority}>
-                        {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                        {t(`tasks.priority${priority.charAt(0).toUpperCase() + priority.slice(1)}`)}
                       </option>
                     ))}
                   </select>
@@ -209,7 +182,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                       <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
                   </span>
-                  Date d'échéance <span className="text-destructive ml-1">*</span>
+                  {t('tasks.dueDate')} <span className="text-destructive ml-1">*</span>
                 </label>
                 <input
                   type="date"
@@ -231,7 +204,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                       <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                   </span>
-                  Assigné à <span className="text-destructive ml-1">*</span>
+                  {t('tasks.assignTo')} <span className="text-destructive ml-1">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -242,7 +215,7 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                     className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent appearance-none transition-all duration-200 bg-background text-foreground"
                     required
                   >
-                    <option value="">Sélectionnez un membre</option>
+                    <option value="">{t('tasks.assignPlaceholder')}</option>
                     {members.map(member => (
                       <option key={member.id} value={member.id}>
                         {member.name} ({member.role})
@@ -264,14 +237,14 @@ export default function EditTaskForm({ task, members, onSubmit }: EditTaskFormPr
                 variant="outline"
                 onClick={() => navigate("/tasks")}
               >
-                Annuler
+                {t('common.cancel')}
               </Button>
               <Button
                 type="submit"
                 className="flex items-center gap-2"
               >
                 <Save className="w-5 h-5" />
-                <span className="font-medium">Enregistrer</span>
+                <span className="font-medium">{t('common.save')}</span>
               </Button>
             </div>
           </form>

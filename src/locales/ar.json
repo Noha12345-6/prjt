@@ -67,11 +67,22 @@
     "status": "الحالة",
     "statusPlaceholder": "اختر الحالة",
     "saveChanges": "حفظ التغييرات",
-    "notFound": "العضو غير موجود"
+    "notFound": "العضو غير موجود",
+    "infoTitle": "معلومات العضو",
+    "infoSubtitle": "املأ التفاصيل أدناه لإضافة عضو جديد للفريق",
+    "editCardSubtitle": "تحديث بيانات هذا العضو",
+    "personalInfo": "المعلومات الشخصية",
+    "roleStatus": "الدور والحالة",
+    "timeline": "الجدول الزمني",
+    "active": "نشط",
+    "inactive": "غير نشط"
   },
   "common": {
+    "edit": "تعديل",
+    "delete": "حذف",
     "cancel": "إلغاء",
-    "saving": "جارٍ الحفظ..."
+    "saving": "جارٍ الحفظ...",
+    "save": "حفظ"
   },
   "tasks": {
     "mainInfo": "المعلومات الرئيسية",
@@ -118,6 +129,43 @@
     "seeAll": "عرض الكل",
     "confirmDelete": "تأكيد الحذف",
     "confirmDeleteDesc": "هذا الإجراء لا رجعة فيه. سيتم حذف المهمة نهائيًا من نظامك.",
-    "deleteForever": "حذف نهائي"
+    "deleteForever": "حذف نهائي",
+    "notFound": "المهمة غير موجودة",
+    "loadError": "فشل في تحميل البيانات",
+    "updatedSuccess": "تم تحديث المهمة بنجاح",
+    "saveError": "حدث خطأ أثناء الحفظ",
+    "loading": "جارٍ التحميل...",
+    "notFoundTitle": "المهمة غير موجودة",
+    "notFoundDesc": "المهمة التي تحاول تعديلها غير موجودة أو تم حذفها.",
+    "editTaskTitle": "تعديل المهمة",
+    "editTaskSubtitle": "قم بتحديث تفاصيل مهمتك",
+    "save": "حفظ"
+  },
+  "membersList": {
+    "title": "أعضاء الفريق",
+    "addMember": "إضافة عضو",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "role": "الدور",
+    "joinDate": "تاريخ الانضمام",
+    "status": "الحالة",
+    "status_active": "نشط",
+    "status_inactive": "غير نشط",
+    "unknown": "غير معروف",
+    "actions": "إجراءات",
+    "openMenu": "فتح القائمة",
+    "searchLabel": "بحث عن الأعضاء",
+    "searchPlaceholder": "ابحث عن الأعضاء...",
+    "filterByRole": "تصفية حسب الدور:",
+    "allRoles": "كل الأدوار",
+    "filterByStatus": "تصفية حسب الحالة:",
+    "allStatuses": "كل الحالات",
+    "noMembers": "لا يوجد أعضاء",
+    "noMembersSubtitle": "حاول تعديل البحث أو الفلتر",
+    "showing": "عرض",
+    "of": "من",
+    "members": "الأعضاء",
+    "previous": "السابق",
+    "next": "التالي"
   }
 } 

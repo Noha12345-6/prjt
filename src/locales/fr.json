@@ -67,11 +67,22 @@
     "status": "Statut",
     "statusPlaceholder": "Sélectionnez le statut",
     "saveChanges": "Enregistrer les modifications",
-    "notFound": "Membre non trouvé"
+    "notFound": "Membre non trouvé",
+    "infoTitle": "Informations du membre",
+    "infoSubtitle": "Remplissez les informations ci-dessous pour ajouter un nouveau membre",
+    "editCardSubtitle": "Mettez à jour les informations de ce membre",
+    "personalInfo": "Informations personnelles",
+    "roleStatus": "Rôle & Statut",
+    "timeline": "Historique",
+    "active": "Actif",
+    "inactive": "Inactif"
   },
   "common": {
+    "edit": "Éditer",
+    "delete": "Supprimer",
     "cancel": "Annuler",
-    "saving": "Enregistrement..."
+    "saving": "Enregistrement...",
+    "save": "Enregistrer"
   },
   "tasks": {
     "mainInfo": "Informations principales",
@@ -118,6 +129,43 @@
     "seeAll": "Voir toutes",
     "confirmDelete": "Confirmer la suppression",
     "confirmDeleteDesc": "Cette action est irréversible. La tâche sera définitivement supprimée de votre système.",
-    "deleteForever": "Supprimer définitivement"
+    "deleteForever": "Supprimer définitivement",
+    "notFound": "Tâche non trouvée",
+    "loadError": "Échec du chargement des données",
+    "updatedSuccess": "Tâche mise à jour avec succès",
+    "saveError": "Une erreur est survenue lors de la sauvegarde",
+    "loading": "Chargement...",
+    "notFoundTitle": "Tâche introuvable",
+    "notFoundDesc": "La tâche que vous essayez de modifier n'existe pas ou a été supprimée.",
+    "editTaskTitle": "Modifier la tâche",
+    "editTaskSubtitle": "Mettez à jour les détails de votre tâche",
+    "save": "Enregistrer"
+  },
+  "membersList": {
+    "title": "Membres de l'équipe",
+    "addMember": "Ajouter un membre",
+    "name": "Nom",
+    "email": "Email",
+    "role": "Rôle",
+    "joinDate": "Date d'adhésion",
+    "status": "Statut",
+    "status_active": "Actif",
+    "status_inactive": "Inactif",
+    "unknown": "Inconnu",
+    "actions": "Actions",
+    "openMenu": "Ouvrir le menu",
+    "searchLabel": "Rechercher des membres",
+    "searchPlaceholder": "Rechercher des membres...",
+    "filterByRole": "Filtrer par rôle :",
+    "allRoles": "Tous les rôles",
+    "filterByStatus": "Filtrer par statut :",
+    "allStatuses": "Tous les statuts",
+    "noMembers": "Aucun membre trouvé",
+    "noMembersSubtitle": "Essayez d'ajuster votre recherche ou filtre",
+    "showing": "Affichage de",
+    "of": "sur",
+    "members": "membres",
+    "previous": "Précédent",
+    "next": "Suivant"
   }
 } 
