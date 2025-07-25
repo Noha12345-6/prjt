@@ -5,6 +5,7 @@ import App from './App.tsx'
 import 'react-toastify/dist/ReactToastify.css';
 import { Toaster } from 'sonner';
 import "./i18n";
+import 'leaflet/dist/leaflet.css';
 
 
 createRoot(document.getElementById('root')!).render(

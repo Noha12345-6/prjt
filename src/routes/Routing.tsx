@@ -8,6 +8,7 @@ import EditTask from "@/pages/tasks/EditTask";
 import EditMember from "@/pages/EditMember";
 import Layout from "@/component/Layout"; 
 import { useTranslation } from "react-i18next";
+import TestAddressMap from '../pages/TestAddressMap';
 
 export default function AppRoutes() {
   const { i18n } = useTranslation();
@@ -32,6 +33,10 @@ export default function AppRoutes() {
             { path: "new", element: <NewTask /> },
             { path: "edit/:id", element: <EditTask key={i18n.language} /> }
           ]
+        },
+        { 
+          path: "/test-map",
+          element: <TestAddressMap />
         },
         { path: "*", element: <Dashboard key={i18n.language} /> } // Page par défaut
       ]
