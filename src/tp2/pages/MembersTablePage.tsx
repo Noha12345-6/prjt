@@ -5,117 +5,160 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  type CellContext,
+  type Row,
 } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
+import { Mail, MapPin, UserCheck, UserX } from 'lucide-react';
 
 export default function MembersTablePage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Member>>({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const { data } = await axios.get<Member[]>(
-          'https://67575d82c0a427baf94c94da.mockapi.io/dev101/ApiDemande/apiphp/demande'
-        );
-        setMembers(data);
-      } catch (err) {
-        setError('Erreur lors du chargement des membres');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMembers();
+    setLoading(true);
+    axios
+      .get<Member[]>('https://67575d82c0a427baf94c94da.mockapi.io/dev101/ApiDemande/apiphp/demande')
+      .then((res) => setMembers(res.data))
+      .finally(() => setLoading(false));
   }, []);
 
+  // Supprimer un membre
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce membre ?')) return;
-    try {
-      await axios.delete(
-        `https://67575d82c0a427baf94c94da.mockapi.io/dev101/ApiDemande/apiphp/demande/${id}`
-      );
-      setMembers((prev) => prev.filter((m) => m.id !== id));
-    } catch (err) {
-      setError('Erreur lors de la suppression');
-      console.error(err);
-    }
+    if (!window.confirm('Supprimer ce membre ?')) return;
+    await axios.delete(`https://67575d82c0a427baf94c94da.mockapi.io/dev101/ApiDemande/apiphp/demande/${id}`);
+    setMembers((prev) => prev.filter((m) => m.id !== id));
   };
 
+  // Commencer l'édition
   const handleEdit = (member: Member) => {
     setEditId(member.id);
     setEditForm({ ...member });
   };
 
+  // Sauvegarder l'édition
   const handleEditSave = async () => {
     if (!editId) return;
-    try {
-      const { data } = await axios.put<Member>(
-        `https://67575d82c0a427baf94c94da.mockapi.io/dev101/ApiDemande/apiphp/demande/${editId}`,
-        editForm
-      );
-      setMembers((prev) => prev.map((m) => (m.id === editId ? data : m)));
-      setEditId(null);
-      setEditForm({});
-    } catch (err) {
-      setError('Erreur lors de la mise à jour');
-      console.error(err);
-    }
+    const { data } = await axios.put<Member>(
+      `https://67575d82c0a427baf94c94da.mockapi.io/dev101/ApiDemande/apiphp/demande/${editId}`,
+      editForm
+    );
+    setMembers((prev) => prev.map((m) => (m.id === editId ? data : m)));
+    setEditId(null);
+    setEditForm({});
+  };
+
+  // Badges status et rôle
+  const StatusBadge = ({ status }: { status: string }) => {
+    const isActive = status === 'active';
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+        isActive 
+          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400' 
+          : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
+      }`}>
+        {isActive ? (
+          <UserCheck className="w-3 h-3 mr-1" />
+        ) : (
+          <UserX className="w-3 h-3 mr-1" />
+        )}
+        {isActive ? 'Actif' : 'Inactif'}
+      </span>
+    );
+  };
+
+  const RoleBadge = ({ role }: { role: string }) => {
+    const roleColors: Record<string, string> = {
+      'Developer': 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+      'Designer': 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+      'Manager': 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+      'QA Engineer': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+      'Product Owner': 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400',
+    };
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        roleColors[role] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+      }`}>
+        {role}
+      </span>
+    );
+  };
+
+  const getInitials = (name: string) => {
+    return name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?';
   };
 
   const columns = useMemo(
     () => [
-      { accessorKey: 'name', header: 'Nom' },
-      { accessorKey: 'email', header: 'Email' },
-      { accessorKey: 'role', header: 'Rôle' },
-      { 
-        accessorKey: 'status', 
-        header: 'Statut',
-        cell: ({ getValue }: any) => {
-          const status = getValue();
+      {
+        accessorKey: 'name',
+        header: 'Membre',
+        cell: (ctx: CellContext<Member, unknown>) => {
+          const member = ctx.row.original;
           return (
-            <span className={`px-2 py-1 rounded-full text-xs ${
-              status === 'active' 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-gray-100 text-gray-800'
-            }`}>
-              {status}
-            </span>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-lg">
+                {getInitials(member.name)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-foreground truncate">
+                  {member.name}
+                </div>
+                <div className="text-sm text-muted-foreground flex items-center truncate">
+                  <Mail className="w-3 h-3 mr-1 flex-shrink-0" />
+                  <span className="truncate">{member.email}</span>
+                </div>
+              </div>
+            </div>
           );
         }
       },
-      { accessorKey: 'address', header: 'Adresse' },
       { 
-        accessorKey: 'lat', 
-        header: 'Position',
-        cell: ({ row }: any) => (
-          <span>
-            {row.original.lat}, {row.original.lng}
-          </span>
-        )
+        accessorKey: 'role', 
+        header: 'Rôle',
+        cell: (ctx: CellContext<Member, unknown>) => <RoleBadge role={ctx.getValue() as string} />
+      },
+      { 
+        accessorKey: 'status', 
+        header: 'Statut',
+        cell: (ctx: CellContext<Member, unknown>) => <StatusBadge status={ctx.getValue() as string} />
+      },
+      { 
+        accessorKey: 'address', 
+        header: 'Localisation',
+        cell: (ctx: CellContext<Member, unknown>) => {
+          const member = ctx.row.original;
+          return (
+            <div className="max-w-xs">
+              <div className="text-sm text-foreground flex items-start">
+                <MapPin className="w-3 h-3 mr-1 mt-0.5 text-muted-foreground flex-shrink-0" />
+                <span className="line-clamp-2">{member.address}</span>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1 ml-4">
+                {member.lat}, {member.lng}
+              </div>
+            </div>
+          );
+        }
       },
       {
         id: 'actions',
         header: 'Actions',
-        cell: ({ row }: any) => {
-          const member = row.original;
+        cell: (ctx: CellContext<Member, unknown>) => {
+          const member = ctx.row.original;
           return editId === member.id ? (
             <div className="flex gap-2">
               <button
-                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                className="text-green-600 hover:underline"
                 onClick={handleEditSave}
               >
                 Sauver
               </button>
               <button
-                className="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+                className="text-gray-600 hover:underline"
                 onClick={() => setEditId(null)}
               >
                 Annuler
@@ -124,13 +167,13 @@ export default function MembersTablePage() {
           ) : (
             <div className="flex gap-2">
               <button
-                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                className="text-blue-600 hover:underline"
                 onClick={() => handleEdit(member)}
               >
                 Éditer
               </button>
               <button
-                className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                className="text-red-600 hover:underline"
                 onClick={() => handleDelete(member.id)}
               >
                 Supprimer
@@ -150,82 +193,57 @@ export default function MembersTablePage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 bg-background rounded-xl shadow-lg border border-border">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gestion des Membres</h1>
-          <p className="text-gray-600">Liste des membres de l'organisation</p>
-        </div>
+        <h1 className="text-2xl font-bold text-foreground">Liste des membres (API)</h1>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition-colors"
           onClick={() => navigate('/tp2/members-add')}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-          Ajouter un membre
+          Ajouter
         </button>
       </div>
-
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-        </div>
-      )}
-
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
+        <div className="text-muted-foreground">Chargement...</div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th
-                        key={header.id}
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                        {editId === row.original.id && cell.column.id !== 'actions' ? (
-                          <input
-                            className="border border-gray-300 px-3 py-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            value={editForm[cell.column.id as keyof Member] ?? ''}
-                            onChange={(e) =>
-                              setEditForm((prev) => ({
-                                ...prev,
-                                [cell.column.id]: e.target.value,
-                              }))
-                            }
-                          />
-                        ) : (
-                          flexRender(cell.column.columnDef.cell ?? cell.column.columnDef.accessorKey, cell.getContext())
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {members.length === 0 && !loading && (
-            <div className="text-center py-8 text-gray-500">
-              Aucun membre trouvé
-            </div>
-          )}
+        <div className="overflow-x-auto rounded-lg">
+          <table className="w-full border text-sm bg-card rounded-lg overflow-hidden">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="bg-muted dark:bg-muted">
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id} className="border-b border-border px-2 py-2 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-muted dark:bg-muted">
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="even:bg-muted/50 hover:bg-accent/30 transition-colors">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-2 py-2 text-foreground border-b border-border">
+                      {editId === row.original.id && cell.column.id !== 'actions' ? (
+                        <input
+                          className="border px-1 py-0.5 rounded w-full bg-background text-foreground"
+                          value={editForm[cell.column.id as keyof Member] ?? ''}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              [cell.column.id]: e.target.value,
+                            }))
+                          }
+                        />
+                      ) : (
+                        flexRender(cell.column.columnDef.cell ?? cell.column.columnDef.accessorKey, cell.getContext())
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

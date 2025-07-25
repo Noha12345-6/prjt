@@ -45,16 +45,16 @@ export default function AddMemberPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 bg-background rounded-xl shadow-lg border border-border">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Ajouter un nouveau membre</h1>
-        <p className="text-gray-600">Remplissez le formulaire pour ajouter un membre à votre organisation</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Ajouter un nouveau membre</h1>
+        <p className="text-muted-foreground">Remplissez le formulaire pour ajouter un membre à votre organisation</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8 space-y-6">
+      <form onSubmit={handleSubmit} className="bg-card rounded-lg shadow-md p-8 space-y-6 border border-border">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
               Nom complet <span className="text-red-500">*</span>
             </label>
             <input
@@ -63,13 +63,13 @@ export default function AddMemberPage() {
               value={form.name}
               onChange={handleChange}
               placeholder="Jean Dupont"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
               Email <span className="text-red-500">*</span>
             </label>
             <input
@@ -79,13 +79,13 @@ export default function AddMemberPage() {
               value={form.email}
               onChange={handleChange}
               placeholder="jean.dupont@example.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="role" className="block text-sm font-medium text-foreground mb-1">
               Rôle <span className="text-red-500">*</span>
             </label>
             <select
@@ -93,7 +93,7 @@ export default function AddMemberPage() {
               name="role"
               value={form.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             >
               <option value="">Sélectionner un rôle</option>
@@ -104,7 +104,7 @@ export default function AddMemberPage() {
           </div>
 
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="status" className="block text-sm font-medium text-foreground mb-1">
               Statut <span className="text-red-500">*</span>
             </label>
             <select
@@ -112,7 +112,7 @@ export default function AddMemberPage() {
               name="status"
               value={form.status}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             >
               <option value="active">Actif</option>
@@ -122,7 +122,7 @@ export default function AddMemberPage() {
           </div>
 
           <div>
-            <label htmlFor="joinDate" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="joinDate" className="block text-sm font-medium text-foreground mb-1">
               Date d'adhésion <span className="text-red-500">*</span>
             </label>
             <input
@@ -131,13 +131,13 @@ export default function AddMemberPage() {
               value={form.joinDate}
               onChange={handleChange}
               type="date"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="address" className="block text-sm font-medium text-foreground mb-1">
               Adresse <span className="text-red-500">*</span>
             </label>
             <input
@@ -146,13 +146,13 @@ export default function AddMemberPage() {
               value={form.address}
               onChange={handleChange}
               placeholder="123 Rue de la Paix, Paris"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="lat" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="lat" className="block text-sm font-medium text-foreground mb-1">
               Latitude <span className="text-red-500">*</span>
             </label>
             <input
@@ -163,13 +163,13 @@ export default function AddMemberPage() {
               placeholder="48.8566"
               type="number"
               step="any"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="lng" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="lng" className="block text-sm font-medium text-foreground mb-1">
               Longitude <span className="text-red-500">*</span>
             </label>
             <input
@@ -180,7 +180,7 @@ export default function AddMemberPage() {
               placeholder="2.3522"
               type="number"
               step="any"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
               required
             />
           </div>
@@ -190,14 +190,14 @@ export default function AddMemberPage() {
           <button
             type="button"
             onClick={() => navigate('/tp2/members-table')}
-            className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border-border rounded-md text-foreground hover:bg-muted transition-colors"
           >
             Retour à la liste
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
             {saving ? (
               <>
