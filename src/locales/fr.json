@@ -75,7 +75,8 @@
     "roleStatus": "Rôle & Statut",
     "timeline": "Historique",
     "active": "Actif",
-    "inactive": "Inactif"
+    "inactive": "Inactif",
+    "addMember": "Ajouter un membre"
   },
   "common": {
     "edit": "Éditer",

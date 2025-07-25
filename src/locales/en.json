@@ -75,7 +75,8 @@
     "roleStatus": "Role & Status",
     "timeline": "Timeline",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "addMember": "Add Member"
   },
   "common": {
     "edit": "Edit",

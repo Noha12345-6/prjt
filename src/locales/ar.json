@@ -75,7 +75,8 @@
     "roleStatus": "الدور والحالة",
     "timeline": "الجدول الزمني",
     "active": "نشط",
-    "inactive": "غير نشط"
+    "inactive": "غير نشط",
+    "addMember": "إضافة عضو"
   },
   "common": {
     "edit": "تعديل",

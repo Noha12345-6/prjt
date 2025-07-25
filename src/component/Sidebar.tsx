@@ -94,19 +94,13 @@ const sidebarItems = [
   ];
 
   const bottomItems = [
-    {
-      id: "notifications",
-      labelKey: "notifications",
-      icon: Bell,
-      path: "/notifications",
-      badge: 3
-    },
-    {
+   {
       id: "settings",
       labelKey: "settings",
       icon: Settings,
       path: "/settings"
     }
+   
   ];
 
 export default function Sidebar() {
