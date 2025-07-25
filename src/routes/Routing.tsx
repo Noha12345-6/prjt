@@ -9,6 +9,10 @@ import EditMember from "@/pages/EditMember";
 import Layout from "@/component/Layout"; 
 import { useTranslation } from "react-i18next";
 import TestAddressMap from '../pages/TestAddressMap';
+import MembersTablePage from '@/tp2/pages/MembersTablePage';
+// import MembersCrudFormPage from '@/tp2/pages/MembersCrudFormPage';
+import AddMemberPage from '@/tp2/pages/AddMemberPage';
+// import MembersCrudPage from '@/tp2/pages/MembersCrudPage';
 
 export default function AppRoutes() {
   const { i18n } = useTranslation();
@@ -34,6 +38,19 @@ export default function AppRoutes() {
             { path: "edit/:id", element: <EditTask key={i18n.language} /> }
           ]
         },
+        { 
+          path: "tp2/members-table",
+          element: <MembersTablePage />
+        },
+       
+        { 
+          path: "tp2/members-add",
+          element: <AddMemberPage />
+        },
+        // { 
+        //   path: "tp2/members-crud",
+        //   element: <MembersCrudPage />
+        // },
         { 
           path: "/test-map",
           element: <TestAddressMap />

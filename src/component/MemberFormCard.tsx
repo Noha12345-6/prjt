@@ -24,11 +24,16 @@ import {
   Activity,
   Plus,
   CheckCircle,
+  MapPin,
 } from "lucide-react";
 
 import { MemberRoles } from "@/validation/schema";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import SearchPanel from './SearchPanel';
+import CoordinatesPanel from './CoordinatesPanel';
+import MapPanel from './MapPanel';
 
 type Props = {
   form: any;
@@ -39,6 +44,62 @@ type Props = {
 export default function MemberFormCard({ form, onSubmit, isEditMode = false }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  // Localisation state lié au form
+  const [address, setAddress] = useState(form.watch('address') || '');
+  const [position, setPosition] = useState([
+    form.watch('lat') || 33.9716,
+    form.watch('lng') || -6.8498
+  ]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleSelectSuggestion = (suggestion: { label: string; y: number; x: number }) => {
+    setAddress(suggestion.label);
+    setPosition([suggestion.y, suggestion.x]);
+    setSuggestions([]);
+    form.setValue('address', suggestion.label);
+    form.setValue('lat', suggestion.y);
+    form.setValue('lng', suggestion.x);
+  };
+
+  const handleMapClick = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const lat = position[0] + (0.5 - y) * 0.02;
+    const lng = position[1] + (x - 0.5) * 0.02;
+    setPosition([lat, lng]);
+    form.setValue('lat', lat);
+    form.setValue('lng', lng);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+      );
+      const result = await response.json();
+      if (result && result.display_name) {
+        setAddress(result.display_name);
+        form.setValue('address', result.display_name);
+      }
+    } catch {}
+  };
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setPosition([pos.coords.latitude, pos.coords.longitude]);
+          setAddress('Current Location');
+          form.setValue('lat', pos.coords.latitude);
+          form.setValue('lng', pos.coords.longitude);
+          form.setValue('address', 'Current Location');
+        },
+        () => {
+          alert('Unable to retrieve your location');
+        }
+      );
+    }
+  };
 
   return (
     <Card className="shadow-xl">
@@ -230,6 +291,25 @@ export default function MemberFormCard({ form, onSubmit, isEditMode = false }: P
                   </FormItem>
                 )}
               />
+            </div>
+            {/* Section localisation */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 pb-2 border-b">
+                <MapPin className="w-4 h-4 text-red-500" />
+                <h3 className="font-medium">{t('members.location') || 'Localisation'}</h3>
+              </div>
+              <SearchPanel
+                address={address}
+                setAddress={setAddress}
+                suggestions={suggestions}
+                setSuggestions={setSuggestions}
+                isSearching={isSearching}
+                setIsSearching={setIsSearching}
+                onSelectSuggestion={handleSelectSuggestion}
+                onGetCurrentLocation={getCurrentLocation}
+              />
+              <CoordinatesPanel position={position} />
+              <MapPanel position={position} onMapClick={handleMapClick} />
             </div>
 
             {/* Preview card si le formulaire est valide */}

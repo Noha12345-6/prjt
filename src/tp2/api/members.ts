@@ -1,4 +1,4 @@
-// src/api/members.ts
+
 import axios from "axios";
 import { type Member, type MemberCreate, type MemberUpdate } from "../api/types/member";
 

@@ -328,6 +328,20 @@ export default function Sidebar() {
           </div>
         </ScrollArea>
 
+        {/* TP2 Section */}
+        <Separator />
+        <div className="p-3 space-y-2">
+          <div className="mb-2 text-xs font-semibold text-muted-foreground uppercase">TP2</div>
+          <Button className="w-full justify-start" variant="ghost" onClick={() => navigate('/tp2/members-table')}>
+            Liste Membres (Table)
+          </Button>
+          <Button className="w-full justify-start" variant="ghost" onClick={() => navigate('/tp2/members-add')}>
+            Ajouter Membre
+          </Button>
+          
+        </div>
+        <Separator />
+
         <Separator />
 
         {/* Section du bas */}
